@@ -37,7 +37,7 @@ export class ContractController {
     @UploadedFiles(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 3 * 1024 * 1024 }),
+          new MaxFileSizeValidator({ maxSize: 15 * 1024 * 1024 }),
           new FileTypeValidator({
             fileType: /image\/(pdf|jpg|jpeg|png|webp|docx)/,
           }),

@@ -14,55 +14,23 @@ export class LLMService {
       data: {
         model: 'llama3.2',
         steam: false,
-        prompt: `we need to invoice a client.
-study the document.
-you have to find:
-the language of the document,  
-the type of the document,
-the number of the document,
-bank details,
- user information, first and last name
- company.
+        prompt: `
+We are 2 parties that need to arrange an invoice.
+Study the text I send: ${text}.
+here is the information I need you to find form the text:
 
-example (there might be more informatio nthan in this example ):
-
-if there is no data put null
-
-${text}
-
-that's the format of the output I need:
-{
-additionalInfo: string;
-  balance_due: number;
-  bankDetails: string;
-  companyPromoInfoEmail: string;
-  companyPromoInfoPhone: string;
-  companyPromoInfoWebPage: string;
-  contractId: number;
-  currencySymbol: string;
-  discount: number;
-  docId: string;
-  dueDate: string;
-  fromEmail: string;
-  fromName: string;
-  isExpense: false;
-  issueDate: string;
-  languageCode: string;
-  logo: string;
-  paidAmount: number;
-  paidDate: string;
-  PONumber: string;
-  services: string;
-  subtotal: number;
-  tax: number;
-  toAddress: string;
-  toEmail: string;
-  toName: string;
-  toPhone: string;
-  total: number;
-  urlHash: string;
-  userId: number;
-}`,
+Contractor company Name (Nume Companie Prestator):
+Contractor administrator Name (Nume Administrator Prestator):
+Contractor IBAN (IBAN Prestator):
+Beneficiary's Name: 
+Denumire Companie (Company Name):.
+Cod fiscal (Tax Code): 
+BIC (Bank Code): 
+IBAN (International Bank Account Number): 
+Payment Details:
+Nume Beneficiar (Beneficiary's Name)
+Valuta (Currency): 
+`,
         stream: false,
       },
     };

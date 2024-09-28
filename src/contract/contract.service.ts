@@ -28,9 +28,15 @@ export class ContractService {
       file,
       this.configService.getOrThrow('AWS_BUCKET'),
     );
+    console.log(file);
+    console.log(uploadedContract);
+    const formData = new FormData();
+    const blob = new Blob([file.buffer], { type: file.mimetype });
+
+    formData.append('image', blob, 'file');
 
     const ocrResponse = await this.ocrService.extractText({
-      image: `https://sirius-invoicer-bucket.s3.eu-west-2.amazonaws.com/${uploadedContract.file}`,
+      formData,
     });
     const llmResponse: SiriusContract = await this.llmService.extractData(
       JSON.stringify(ocrResponse),
