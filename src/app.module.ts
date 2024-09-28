@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ContractModule } from './contract/contract.module';
@@ -10,6 +11,6 @@ import { UserModule } from './user/user.module';
 @Module({
   imports: [UserModule, ContractModule, InvoiceModule],
   controllers: [AppController],
-  providers: [AppService, PrismaService, S3Service],
+  providers: [AppService, PrismaService, S3Service, ConfigService],
 })
 export class AppModule {}

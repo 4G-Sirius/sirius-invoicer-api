@@ -1,1 +1,32 @@
-export class Contract {}
+export interface SiriusContract {
+  additionalInfo: string;
+  balance_due: number;
+  bankDetails: string;
+  companyPromoInfoEmail: string;
+  companyPromoInfoPhone: string;
+  companyPromoInfoWebPage: string;
+  contractId: number;
+  currencySymbol: string;
+  discount: number;
+  docId: string;
+  dueDate: string;
+  fromEmail: string;
+  fromName: string;
+  isExpense: false;
+  issueDate: string;
+  languageCode: string;
+  logo: string;
+  paidAmount: number;
+  paidDate: string;
+  PONumber: string;
+  services: string;
+  subtotal: number;
+  tax: number;
+  toAddress: string;
+  toEmail: string;
+  toName: string;
+  toPhone: string;
+  total: number;
+  urlHash: string;
+  userId: number;
+}

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   FileTypeValidator,
@@ -18,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ContractService } from './contract.service';
+import { UploadContractDto } from './dto/update-contract.dto';
 
 @Controller('contract')
 @ApiTags('Contract')
@@ -31,12 +33,13 @@ export class ContractController {
   @UseInterceptors(FilesInterceptor('images'))
   @ApiConsumes('multipart/form-data')
   uploadFilesForJob(
+    @Body() body: UploadContractDto,
     @UploadedFiles(
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 3 * 1024 * 1024 }),
           new FileTypeValidator({
-            fileType: /image\/(pdf|jpeg|png|webp|docx)/,
+            fileType: /image\/(pdf|jpg|jpeg|png|webp|docx)/,
           }),
         ],
       }),

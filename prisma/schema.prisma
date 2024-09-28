@@ -14,8 +14,10 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  phone String @unique
+  id         String  @id @default(cuid())
+  phone      String  @unique
+  name       String
+  telegramId String?
 }
 
 model Invoice {
@@ -25,4 +27,35 @@ model Invoice {
 model Contract {
   id  String @id @default(cuid())
   url String
+
+  contractId              Int
+  userId                  Int
+  logo                    String
+  urlHash                 String
+  docId                   String
+  currencySymbol          String
+  languageCode            String
+  issueDate               String
+  dueDate                 String
+  PONumber                String
+  fromName                String
+  fromEmail               String
+  toName                  String
+  toEmail                 String
+  toPhone                 String
+  toAddress               String
+  services                String
+  bankDetails             String
+  additionalInfo          String
+  companyPromoInfoPhone   String
+  companyPromoInfoEmail   String
+  companyPromoInfoWebPage String
+  tax                     Int
+  discount                Int
+  total                   Int
+  subtotal                Int
+  balance_due             Int
+  paidDate                String
+  paidAmount              Int
+  isExpense               Boolean
 }

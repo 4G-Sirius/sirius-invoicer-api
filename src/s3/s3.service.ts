@@ -25,16 +25,21 @@ export class S3Service {
   }
 
   async uploadFile(file: Express.Multer.File, Bucket: string) {
-    const fileExtension = path.extname(file.originalname);
-    const filename = `${uuidv4()}${fileExtension}`;
+    try {
+      const fileExtension = path.extname(file.originalname);
+      const filename = `${uuidv4()}${fileExtension}`;
 
-    const putCommand = new PutObjectCommand({
-      Body: file.buffer,
-      Bucket,
-      Key: filename,
-    });
+      const putCommand = new PutObjectCommand({
+        Body: file.buffer,
+        Bucket,
+        Key: filename,
+      });
 
-    await this.s3.send(putCommand);
-    return { file: filename };
+      await this.s3.send(putCommand);
+
+      return { file: filename };
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
