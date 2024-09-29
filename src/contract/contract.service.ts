@@ -2,12 +2,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LLMService } from 'src/llmService/llm.service';
-
 import { OCRService } from 'src/ocrService/ocr.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
-import { SiriusContract } from './entities/contract.entity';
 
+const pdf = require('pdf-parse');
 @Injectable()
 export class ContractService {
   constructor(
@@ -18,18 +17,16 @@ export class ContractService {
     private llmService: LLMService,
   ) {}
 
-  async create(files: Express.Multer.File[]) {
+  async create(files: Express.Multer.File[], promptText: string) {
     const file = files[0];
     if (!file) {
       throw new Error('No files uploaded');
     }
 
-    const uploadedContract = await this.s3Service.uploadFile(
+    await this.s3Service.uploadFile(
       file,
       this.configService.getOrThrow('AWS_BUCKET'),
     );
-    console.log(file);
-    console.log(uploadedContract);
     const formData = new FormData();
     const blob = new Blob([file.buffer], { type: file.mimetype });
 
@@ -38,28 +35,82 @@ export class ContractService {
     const ocrResponse = await this.ocrService.extractText({
       formData,
     });
-    const llmResponse: SiriusContract = await this.llmService.extractData(
-      JSON.stringify(ocrResponse),
+    const llmResponse = await this.llmService.extractData(
+      ocrResponse,
+      promptText,
     );
-
-    console.log(llmResponse);
-
-    // const job = await this.prismaService.contract.create({
-    //   data: { ...llmResponse, url: uploadedContract.file },
-    // });
-
-    return ocrResponse;
+    return llmResponse;
   }
 
-  findAll() {
-    return this.prismaService.contract.findMany();
+  async createPdf(
+    files: Express.Multer.File[],
+    promptText: string,
+    phone: string,
+  ) {
+    const file = files[0];
+    if (!file) {
+      throw new Error('No files uploaded');
+    }
+
+    const text = await pdf(file.buffer);
+
+    const llmResponse = await this.llmService.extractData(
+      text.text,
+      promptText,
+    );
+    const data = await this.prismaService.invoice.create({
+      data: {
+        provider: { create: { ...llmResponse.provider } },
+        beneficiary: { create: { ...llmResponse.beneficiary } },
+        dates: { create: { ...llmResponse.dates } },
+        payments: { create: { ...llmResponse.payments } },
+        service: {
+          create: {
+            ...llmResponse.service,
+          },
+        },
+      },
+    });
+    const datattt = await this.prismaService.invoice.findFirst({
+      where: { id: data.id },
+      include: {
+        provider: true,
+        beneficiary: true,
+        dates: true,
+        payments: true,
+        service: true,
+      },
+    });
+    return datattt;
   }
 
-  findOne(id: string) {
-    return this.prismaService.contract.findUnique({ where: { id } });
+  findAll(phone: string) {
+    return this.prismaService.invoice.findMany({
+      where: { user: { phone } },
+      include: {
+        provider: true,
+        beneficiary: true,
+        dates: true,
+        payments: true,
+        service: true,
+      },
+    });
   }
 
-  remove(id: string) {
-    return this.prismaService.contract.delete({ where: { id } });
+  findOne(id: number) {
+    return this.prismaService.invoice.findUnique({
+      where: { id },
+      include: {
+        provider: true,
+        beneficiary: true,
+        dates: true,
+        service: true,
+        payments: true,
+      },
+    });
+  }
+
+  remove(id: number) {
+    return this.prismaService.invoice.delete({ where: { id } });
   }
 }

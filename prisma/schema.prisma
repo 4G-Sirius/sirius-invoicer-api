@@ -14,48 +14,71 @@ datasource db {
 }
 
 model User {
-  id         String  @id @default(cuid())
-  phone      String  @unique
-  name       String
-  telegramId String?
+  id      Int       @id @default(autoincrement())
+  phone   String    @unique
+  invoice Invoice[]
+}
+
+model Provider {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  administrator String?
+  iban          String?
+  idno          String?
+  bic           String?
+  invoice       Invoice[]
+}
+
+model Beneficiary {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  administrator String?
+  iban          String?
+  idno          String?
+  bic           String?
+  invoice       Invoice[]
+}
+
+model Payment {
+  id       Int       @id @default(autoincrement())
+  total    Int?
+  subtotal Int?
+  tax      Int?
+  currency String?
+  invoice  Invoice[]
+}
+
+model Service {
+  id       Int       @id @default(autoincrement())
+  name     String?
+  quantity Int?
+  um       String?
+  tva      Int?
+  price    Int?
+  invoice  Invoice[]
+}
+
+model Date {
+  id        Int       @id @default(autoincrement())
+  issueDate String?
+  dueDate   String?
+  invoice   Invoice[]
 }
 
 model Invoice {
-  id String @id @default(cuid())
-}
+  id            Int         @id @default(autoincrement())
+  provider      Provider    @relation(fields: [providerId], references: [id])
+  beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id])
+  payments      Payment     @relation(fields: [paymentId], references: [id])
+  dates         Date        @relation(fields: [dateId], references: [id])
+  providerId    Int
+  beneficiaryId Int
+  paymentId     Int
+  dateId        Int
+  user          User?       @relation(fields: [userId], references: [id])
+  userId        Int?
+  service       Service?    @relation(fields: [serviceId], references: [id])
+  serviceId     Int?
 
-model Contract {
-  id  String @id @default(cuid())
-  url String
-
-  contractId              Int
-  userId                  Int
-  logo                    String
-  urlHash                 String
-  docId                   String
-  currencySymbol          String
-  languageCode            String
-  issueDate               String
-  dueDate                 String
-  PONumber                String
-  fromName                String
-  fromEmail               String
-  toName                  String
-  toEmail                 String
-  toPhone                 String
-  toAddress               String
-  services                String
-  bankDetails             String
-  additionalInfo          String
-  companyPromoInfoPhone   String
-  companyPromoInfoEmail   String
-  companyPromoInfoWebPage String
-  tax                     Int
-  discount                Int
-  total                   Int
-  subtotal                Int
-  balance_due             Int
-  paidDate                String
-  paidAmount              Int
-  isExpense               Boolean
+  updatedAt DateTime @updatedAt
 }
