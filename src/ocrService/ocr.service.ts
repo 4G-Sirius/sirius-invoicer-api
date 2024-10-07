@@ -5,23 +5,18 @@ import axios from 'axios';
 export class OCRService {
   constructor() {}
 
-  async extractText({ formData }: { formData: any }): Promise<any> {
+  async extractText({ image }: { image: any }): Promise<any> {
     try {
-      // const response = await axios.request({
-      //   method: 'POST',
-      //   url: 'http://172.22.100.137:2000/ocr',
-      //   data: {
-      //     image_url: image,
-      //     secret_key: 'easyocr_vdt',
-      //   },
-      //   headers: { 'Content-Type': 'application/json' },
-      // });
-
+      console.log('image', image);
       const response = await axios.request({
         method: 'POST',
-        url: 'http://172.22.100.137:5000/model/predict',
-        data: formData,
+        url: 'http://localhost:2000/ocr',
+        data: {
+          secret_key: 'easyocr_vdt',
+          image_url: image,
+        },
       });
+      console.log('response', response);
       return response.data;
     } catch (e) {
       console.log('error', e);

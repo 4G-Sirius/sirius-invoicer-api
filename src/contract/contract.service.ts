@@ -23,18 +23,15 @@ export class ContractService {
       throw new Error('No files uploaded');
     }
 
-    await this.s3Service.uploadFile(
+    const response = await this.s3Service.uploadFile(
       file,
       this.configService.getOrThrow('AWS_BUCKET'),
     );
-    const formData = new FormData();
-    const blob = new Blob([file.buffer], { type: file.mimetype });
-
-    formData.append('image', blob, 'file');
 
     const ocrResponse = await this.ocrService.extractText({
-      formData,
+      image: `https://sirius-invoicer-bucket.s3.eu-west-2.amazonaws.com/${response.file}`,
     });
+
     const llmResponse = await this.llmService.extractData(
       ocrResponse,
       promptText,
